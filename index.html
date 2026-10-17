@@ -126,7 +126,7 @@
         const SECRET_PIN = "1702";
         let myName = "";
         let pubnub;
-
+        const CHANNEL_NAME = "sanskarrcode-love-chat-2026";
         function checkPin() {
             const pin = document.getElementById('pin-input').value;
             if (pin === SECRET_PIN) {
@@ -146,12 +146,12 @@
         function initChat() {
             // Initialize PubNub with Demo Keys (Free for testing)
             pubnub = new PubNub({
-                publishKey: 'pub-c-97a144a5-291e-4ea0-b995-28e7c473f641',
+                publishkey: 'pub-c-97a144a5-291e-4ea0-b995-28e7c473f641',
                 subscribeKey: 'sub-c-ee99c7e6-2aa4-43b5-ac10-00bea0ef6fd7'
             });
 
             // Listen for messages
-            pubnub.subscribe({ channels: [CHANNEL_NAME] });
+        pubnub.subscribe({ channels: ["sanskarrcode-love-chat-2026"] });
             
             pubnub.addListener({
                 message: function(event) {
