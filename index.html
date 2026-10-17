@@ -3,222 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Chat</title>
+    <title>Our Private Space ❤️</title>
     <style>
+        /* LOVE THEME STYLES */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
-        .screen { display: none; width: 100%; min-height: 100vh; }
-        .screen.active { display: flex; justify-content: center; align-items: center; }
-        .container { background: white; padding: 40px; border-radius: 20px; max-width: 500px; width: 90%; text-align: center; }
-        h1 { color: #667eea; font-size: 2.5em; margin-bottom: 10px; }
-        input[type="text"], textarea { width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1em; margin-bottom: 15px; }
-        .btn { padding: 12px 24px; border: none; border-radius: 10px; font-size: 1em; cursor: pointer; font-weight: 600; }
-        .btn.primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 100%; }
-        .btn.secondary { background: #f0f0f0; color: #333; }
-        #chat-screen { flex-direction: column; background: #f5f5f5; }
-        .chat-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .messages-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .message { max-width: 70%; padding: 12px 16px; border-radius: 15px; animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .message.sent { align-self: flex-end; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-        .message.received { align-self: flex-start; background: white; color: #333; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .message-input-area { background: white; padding: 15px; }
-        .input-controls { display: flex; gap: 10px; align-items: flex-end; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
-        .modal.active { display: flex; }
-        .modal-content { background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; text-align: center; }
-        .link-box { display: flex; gap: 10px; margin: 20px 0; }
-        .link-box input { flex: 1; margin-bottom: 0; }
-        .media-preview img { max-width: 100px; max-height: 100px; border-radius: 8px; }
-        .message-media img { max-width: 100%; border-radius: 10px; margin-top: 8px; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); 
+            min-height: 100vh; 
+            overflow-x: hidden;
+        }
+
+        /* PIN LOCK SCREEN */
+        #pin-screen {
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; flex-direction: column;
+        }
+        .pin-box {
+            background: white; padding: 40px; border-radius: 25px; 
+            box-shadow: 0 10px 30px rgba(255, 105, 135, 0.3);
+            text-align: center; width: 90%; max-width: 400px;
+            animation: popIn 0.5s ease;
+        }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        input[type="password"], input[type="text"] {
+            width: 100%; padding: 15px; border: 2px solid #ffb7b2; 
+            border-radius: 15px; font-size: 1.2em; text-align: center;
+            margin: 20px 0; outline: none; transition: 0.3s;
+        }
+        input:focus { border-color: #ff6b81; box-shadow: 0 0 10px rgba(255, 107, 129, 0.2); }
+        
+        .love-btn {
+            background: linear-gradient(to right, #ff6b81, #ff9a9e); 
+            color: white; border: none; padding: 15px 30px; 
+            border-radius: 50px; font-size: 1.1em; cursor: pointer;
+            width: 100%; font-weight: bold; transition: transform 0.2s;
+        }
+        .love-btn:hover { transform: scale(1.05); }
+
+        /* CHAT INTERFACE */
+        #chat-screen { display: none; flex-direction: column; height: 100vh; }
+        .chat-header {
+            background: rgba(255, 255, 255, 0.9); padding: 15px; 
+            text-align: center; backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 107, 129, 0.2);
+        }
+        .status-badge {
+            display: inline-block; padding: 5px 15px; 
+            background: #ffeaa7; color: #d63031; 
+            border-radius: 20px; font-size: 0.9em; font-weight: bold;
+            margin-top: 5px; animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        .messages-area {
+            flex: 1; overflow-y: auto; padding: 20px; 
+            display: flex; flex-direction: column; gap: 15px;
+        }
+        .msg {
+            max-width: 80%; padding: 12px 18px; border-radius: 20px;
+            position: relative; animation: slideUp 0.3s ease;
+            word-wrap: break-word;
+        }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .msg.mine { 
+            align-self: flex-end; 
+            background: linear-gradient(to right, #ff6b81, #ff9a9e); 
+            color: white; border-bottom-right-radius: 5px; 
+        }
+        .msg.theirs { 
+            align-self: flex-start; 
+            background: white; color: #333; 
+            border-bottom-left-radius: 5px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .msg-time { font-size: 0.7em; opacity: 0.7; margin-top: 5px; text-align: right; }
+
+        .input-area {
+            background: white; padding: 15px; 
+            display: flex; gap: 10px; align-items: center;
+            border-top: 1px solid #eee;
+        }
+        .input-area input { 
+            flex: 1; border-radius: 25px; padding: 12px 20px; 
+            border: 1px solid #ddd; margin: 0; text-align: left;
+        }
+        .send-btn {
+            background: #ff6b81; color: white; border: none;
+            width: 50px; height: 50px; border-radius: 50%;
+            font-size: 1.2em; cursor: pointer; display: flex;
+            align-items: center; justify-content: center;
+        }
+
+        /* NOTIFICATION POPUP */
+        #notification {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: #2ecc71; color: white; padding: 10px 25px;
+            border-radius: 30px; box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+            z-index: 1000; display: none; animation: dropDown 0.5s ease;
+        }
+        @keyframes dropDown { from { top: -50px; } to { top: 20px; } }
     </style>
 </head>
 <body>
-    <div id="setup-screen" class="screen active">
-        <div class="container">
-            <h1>🔒 Secure Chat</h1>
-            <p style="color: #666; margin-bottom: 30px;">Private & Self-Destructing Messages</p>
-            <input type="text" id="username" placeholder="Enter your name" maxlength="20">
-            <button id="start-chat" class="btn primary">Start Chat</button>
-            <div style="margin-top: 20px; text-align: left;">
-                <p>⏱️ Messages auto-delete after 5 minutes</p>
-                <p>📸 Share photos securely</p>
-                <p>🔐 No data stored on servers</p>
-            </div>
+
+    <!-- PIN LOCK SCREEN -->
+    <div id="pin-screen">
+        <div class="pin-box">
+            <h1 style="color: #ff6b81; margin-bottom: 10px;">🔒 Private Space</h1>
+            <p style="color: #666; margin-bottom: 20px;">Enter our secret code to enter</p>
+            <input type="password" id="pin-input" placeholder="Enter PIN (1702)" maxlength="4">
+            <button class="love-btn" onclick="checkPin()">Unlock ❤️</button>
+            <p id="pin-error" style="color: red; margin-top: 10px; display: none;">Wrong PIN! Try again.</p>
         </div>
     </div>
 
-    <div id="chat-screen" class="screen">
+    <!-- CHAT SCREEN -->
+    <div id="chat-screen">
         <div class="chat-header">
-            <div>
-                <h2>💬 Private Chat</h2>
-                <p style="font-size: 0.9em; opacity: 0.9;">End-to-End Encrypted</p>
-            </div>
-            <button id="share-link" class="btn secondary">🔗 Share Link</button>
+            <h2 style="color: #ff6b81;">Our Forever Chat 💕</h2>
+            <div id="status-indicator" class="status-badge">Waiting...</div>
         </div>
-        <div id="messages-container" class="messages-container">
-            <div style="text-align: center; color: #666; padding: 40px;">
-                <p>Welcome! 🎉</p>
-                <p>Share the link with your partner</p>
-                <p style="color: #ff6b6b; font-weight: bold;">⚠️ Messages delete after 5 min</p>
-            </div>
+        
+        <div id="messages" class="messages-area">
+            <!-- Messages will appear here -->
         </div>
-        <div class="message-input-area">
-            <div class="media-preview" id="media-preview"></div>
-            <div class="input-controls">
-                <label class="btn" style="padding: 12px; background: #f0f0f0;">
-                    📎
-                    <input type="file" id="media-upload" accept="image/*" hidden>
-                </label>
-                <textarea id="message-input" placeholder="Type a message..." rows="1"></textarea>
-                <button id="send-btn" class="btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">Send</button>
-            </div>
+
+        <div class="input-area">
+            <input type="text" id="msg-input" placeholder="Type a loving message..." onkeypress="handleEnter(event)">
+            <button class="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
 
-    <div id="share-modal" class="modal">
-        <div class="modal-content">
-            <h3>Share This Link</h3>
-            <p>Send this to your partner:</p>
-            <div class="link-box">
-                <input type="text" id="share-url" readonly>
-                <button id="copy-link" class="btn" style="padding: 8px 16px;">Copy</button>
-            </div>
-            <button id="close-modal" class="btn secondary">Close</button>
-        </div>
-    </div>
+    <!-- NOTIFICATION -->
+    <div id="notification">She is Available </div>
 
     <script>
-        let username = '';
-        let roomId = null;
-        let mediaFile = null;
+        const SECRET_PIN = "1702";
+        let myName = "";
 
-        document.getElementById('start-chat').onclick = function() {
-            const name = document.getElementById('username').value.trim();
-            if (!name) { alert('Please enter your name!'); return; }
-            username = name;
-            localStorage.setItem('chat_username', name);
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            roomId = urlParams.get('room') || Math.random().toString(36).substring(2, 15);
-            
-            if (!urlParams.get('room')) {
-                window.history.pushState({}, '', '?room=' + roomId);
+        // CHECK PIN
+        function checkPin() {
+            const pin = document.getElementById('pin-input').value;
+            if (pin === SECRET_PIN) {
+                document.getElementById('pin-screen').style.display = 'none';
+                document.getElementById('chat-screen').style.display = 'flex';
+                
+                // Ask name only once per session
+                if (!localStorage.getItem('chat_name')) {
+                    myName = prompt("What should I call you?") || "My Love";
+                    localStorage.setItem('chat_name', myName);
+                } else {
+                    myName = localStorage.getItem('chat_name');
+                }
+                
+                loadMessages();
+                showNotification("Welcome back, " + myName + "! ❤️");
+                
+                // Listen for partner activity
+                window.addEventListener('storage', handleStorageChange);
+                
+                // Mark myself as available
+                localStorage.setItem('chat_status_' + myName, Date.now());
+            } else {
+                document.getElementById('pin-error').style.display = 'block';
+                setTimeout(() => document.getElementById('pin-error').style.display = 'none', 2000);
             }
-            
-            document.getElementById('setup-screen').classList.remove('active');
-            document.getElementById('chat-screen').classList.add('active');
-            
-            setupListener();
-            addMessage('System', 'Chat started! Share the link with your partner.', false);
-        };
+        }
 
-        document.getElementById('share-link').onclick = function() {
-            const url = window.location.origin + window.location.pathname + '?room=' + roomId;
-            document.getElementById('share-url').value = url;
-            document.getElementById('share-modal').classList.add('active');
-        };
-
-        document.getElementById('copy-link').onclick = function() {
-            document.getElementById('share-url').select();
-            document.execCommand('copy');
-            this.textContent = 'Copied!';
-            setTimeout(() => { this.textContent = 'Copy'; }, 2000);
-        };
-
-        document.getElementById('close-modal').onclick = function() {
-            document.getElementById('share-modal').classList.remove('active');
-        };
-
-        document.getElementById('send-btn').onclick = sendMessage;
-        document.getElementById('message-input').onkeypress = function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-        };
-
-        document.getElementById('media-upload').onchange = function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                mediaFile = { type: file.type, data: ev.target.result };
-                document.getElementById('media-preview').innerHTML = '<img src="' + ev.target.result + '">';
-            };
-            reader.readAsDataURL(file);
-        };
-
+        // SEND MESSAGE
         function sendMessage() {
-            const text = document.getElementById('message-input').value.trim();
-            if (!text && !mediaFile) return;
-            
+            const input = document.getElementById('msg-input');
+            const text = input.value.trim();
+            if (!text) return;
+
             const msgData = {
                 id: Date.now(),
-                author: username,
+                sender: myName,
                 text: text,
-                media: mediaFile,
-                timestamp: new Date().toISOString()
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
             };
+
+            // Save to local storage (Permanent until cleared)
+            let msgs = JSON.parse(localStorage.getItem('forever_chat_msgs') || '[]');
+            msgs.push(msgData);
+            localStorage.setItem('forever_chat_msgs', JSON.stringify(msgs));
+
+            renderMessage(msgData);
+            input.value = '';
             
-            localStorage.setItem('chat_' + roomId, JSON.stringify(msgData));
-            displayMessage(msgData);
-            scheduleDelete(msgData.id);
-            
-            document.getElementById('message-input').value = '';
-            document.getElementById('media-preview').innerHTML = '';
-            mediaFile = null;
+            // Notify partner
+            localStorage.setItem('chat_new_msg', Date.now());
         }
 
-        function setupListener() {
-            window.addEventListener('storage', function(e) {
-                if (e.key === 'chat_' + roomId) {
-                    const data = JSON.parse(e.newValue);
-                    if (data && data.author !== username) {
-                        displayMessage(data);
-                        scheduleDelete(data.id);
-                    }
-                }
-            });
-        }
-
-        function displayMessage(data) {
-            const container = document.getElementById('messages-container');
+        // RENDER MESSAGE
+        function renderMessage(data) {
+            const container = document.getElementById('messages');
             const div = document.createElement('div');
-            div.className = 'message ' + (data.author === username ? 'sent' : 'received');
-            div.id = 'msg-' + data.id;
+            div.className = 'msg ' + (data.sender === myName ? 'mine' : 'theirs');
+            div.innerHTML = `
+                <div>${data.text}</div>
+                <div class="msg-time">${data.time}</div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // LOAD OLD MESSAGES
+        function loadMessages() {
+            const msgs = JSON.parse(localStorage.getItem('forever_chat_msgs') || '[]');
+            document.getElementById('messages').innerHTML = '';
+            msgs.forEach(m => renderMessage(m));
+        }
+
+        // HANDLE PARTNER ACTIVITY
+        function handleStorageChange(e) {
+            if (e.key === 'chat_status_' + myName) return; // Ignore self
             
-            let html = '<div style="font-size: 0.8em; font-weight: bold; margin-bottom: 5px;">' + data.author + '</div>';
-            html += '<div>' + data.text + '</div>';
-            
-            if (data.media && data.media.type.startsWith('image/')) {
-                html += '<div class="message-media"><img src="' + data.media.data + '"></div>';
+            if (e.key && e.key.startsWith('chat_status_')) {
+                const partner = e.key.replace('chat_status_', '');
+                showNotification(partner + " is Available 💚");
+                document.getElementById('status-indicator').innerText = partner + " is Online 💚";
             }
             
-            const time = new Date(data.timestamp);
-            html += '<div style="font-size: 0.75em; margin-top: 5px; opacity: 0.7;">' + time.toLocaleTimeString() + ' ⏱️ Auto-deletes in 5 min</div>';
-            
-            div.innerHTML = html;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
+            if (e.key === 'chat_new_msg') {
+                loadMessages(); // Refresh messages
+            }
         }
 
-        function scheduleDelete(msgId) {
-            setTimeout(function() {
-                const el = document.getElementById('msg-' + msgId);
-                if (el) el.remove();
-            }, 5 * 60 * 1000);
+        // SHOW NOTIFICATION
+        function showNotification(text) {
+            const notif = document.getElementById('notification');
+            notif.innerText = text;
+            notif.style.display = 'block';
+            setTimeout(() => notif.style.display = 'none', 3000);
         }
 
-        function addMessage(author, text, isSent) {
-            const container = document.getElementById('messages-container');
-            const div = document.createElement('div');
-            div.className = 'message ' + (isSent ? 'sent' : 'received');
-            div.innerHTML = '<div style="font-size: 0.8em; font-weight: bold;">' + author + '</div><div>' + text + '</div>';
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('room')) {
-            document.getElementById('username').value = localStorage.getItem('chat_username') || '';
+        function handleEnter(e) {
+            if (e.key === 'Enter') sendMessage();
         }
     </script>
 </body>
