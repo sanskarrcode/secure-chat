@@ -119,14 +119,12 @@
     <div id="notification">Partner is Available 💚</div>
 
     <script>
-        // ️ IMPORTANT: CHANGE THIS CHANNEL NAME TO SOMETHING UNIQUE!
-        // Example: "sanskarrcode-love-chat-2026"
-        const CHANNEL_NAME = "sanskarrcode-private-chat-v2"; 
-        
+        // ✅ FIXED: Single Channel Name Definition
+        const CHANNEL_NAME = "sanskarrcode-love-chat-2026"; 
         const SECRET_PIN = "1702";
         let myName = "";
         let pubnub;
-        const CHANNEL_NAME = "sanskarrcode-love-chat-2026";
+
         function checkPin() {
             const pin = document.getElementById('pin-input').value;
             if (pin === SECRET_PIN) {
@@ -144,34 +142,32 @@
         }
 
         function initChat() {
-            // Initialize PubNub with Demo Keys (Free for testing)
+            // ✅ FIXED: Correct Key Names (Capital K)
             pubnub = new PubNub({
-                publishkey: 'pub-c-97a144a5-291e-4ea0-b995-28e7c473f641',
+                publishKey: 'pub-c-97a144a5-291e-4ea0-b995-28e7c473f641',
                 subscribeKey: 'sub-c-ee99c7e6-2aa4-43b5-ac10-00bea0ef6fd7'
             });
 
-            // Listen for messages
-        pubnub.subscribe({ channels: ["sanskarrcode-love-chat-2026"] });
+            // ✅ FIXED: Using Constant Channel Name
+            pubnub.subscribe({ channels: [CHANNEL_NAME] });
             
             pubnub.addListener({
                 message: function(event) {
                     const msg = event.message;
                     if (msg.sender !== myName) {
                         renderMessage(msg);
-                        showNotification(myName + " is typing... 💚");
-                        document.getElementById('status-indicator').innerText = "Partner Online 💚";
+                        showNotification("New message from partner! 💚");
+                        document.getElementById('status-indicator').innerText = "Partner Online ";
                     }
                 },
                 presence: function(event) {
                     if (event.action === 'join' && event.uuid !== myName) {
                         showNotification("Partner Joined! 💚");
-                        document.getElementById('status-indicator').innerText = "Partner Online 💚";
+                        document.getElementById('status-indicator').innerText = "Partner Online ";
                     }
                 }
             });
 
-            // Announce presence
-            pubnub.hereNow({ channels: [CHANNEL_NAME] });
             showNotification("Welcome back, " + myName + "! ❤️");
         }
 
@@ -187,7 +183,7 @@
                 timestamp: Date.now()
             };
 
-            // Publish to PubNub (Real-time sync across devices!)
+            // ✅ FIXED: Using Constant Channel Name
             pubnub.publish({
                 channel: CHANNEL_NAME,
                 message: msgData
@@ -195,6 +191,8 @@
                 if (!status.error) {
                     renderMessage(msgData);
                     input.value = '';
+                } else {
+                    console.error("PubNub Error:", status);
                 }
             });
         }
