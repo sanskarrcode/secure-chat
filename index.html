@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Our Secret Space 💖</title>
   
-  <!-- PubNub JavaScript SDK v7+ -->
+  <!-- PubNub JavaScript SDK -->
   <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
 
   <style>
@@ -38,7 +38,6 @@
       color: var(--text-dark);
     }
 
-    /* --- TOAST NOTIFICATION --- */
     #toast-notification {
       position: fixed;
       top: -80px;
@@ -64,7 +63,6 @@
       top: 20px;
     }
 
-    /* --- PIN LOCK SCREEN --- */
     #lock-screen {
       position: fixed;
       top: 0;
@@ -157,7 +155,6 @@
       font-weight: 600;
     }
 
-    /* --- MAIN CHAT CONTAINER --- */
     #app-container {
       width: 100%;
       max-width: 460px;
@@ -181,7 +178,6 @@
       }
     }
 
-    /* --- CHAT HEADER --- */
     .chat-header {
       padding: 16px 20px;
       background: rgba(255, 255, 255, 0.4);
@@ -221,7 +217,6 @@
       background: rgba(235, 251, 238, 0.7);
     }
 
-    /* --- MESSAGES AREA --- */
     .messages-area {
       flex: 1;
       overflow-y: auto;
@@ -286,7 +281,6 @@
       opacity: 0.75;
     }
 
-    /* --- INPUT AREA --- */
     .input-area {
       padding: 12px 16px;
       background: rgba(255, 255, 255, 0.4);
@@ -307,12 +301,7 @@
       align-items: center;
       cursor: pointer;
       font-size: 1.1rem;
-      transition: transform 0.2s;
       flex-shrink: 0;
-    }
-
-    .attach-btn:active {
-      transform: scale(0.9);
     }
 
     .chat-input {
@@ -344,14 +333,8 @@
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(255, 117, 140, 0.4);
       flex-shrink: 0;
-      transition: transform 0.2s;
     }
 
-    .send-btn:active {
-      transform: scale(0.9);
-    }
-
-    /* --- ANIMATIONS --- */
     @keyframes popIn {
       0% { opacity: 0; transform: scale(0.85); }
       100% { opacity: 1; transform: scale(1); }
@@ -380,13 +363,11 @@
 </head>
 <body>
 
-  <!-- Toast Notification Popup -->
   <div id="toast-notification">
     <span id="toast-icon">💖</span>
     <span id="toast-text">Partner is Available 💚</span>
   </div>
 
-  <!-- Mandatory PIN Screen -->
   <div id="lock-screen">
     <div class="lock-card" id="lock-card">
       <div class="lock-icon">🔒</div>
@@ -398,7 +379,6 @@
     </div>
   </div>
 
-  <!-- Main Chat Screen -->
   <div id="app-container">
     <header class="chat-header">
       <div class="header-info">
@@ -412,7 +392,7 @@
     <main class="messages-area" id="messages-area"></main>
 
     <footer class="input-area">
-      <label class="attach-btn" title="Send Photo/Video">
+      <label class="attach-btn" title="Send Photo">
         📷
         <input type="file" id="media-input" accept="image/*,video/*" style="display: none;" onchange="handleMediaUpload(this)">
       </label>
@@ -422,28 +402,19 @@
   </div>
 
   <script>
-    /*************************************************************************
-     * PUBNUB CONFIGURATION
-     * Replace the strings below with your keys from your PubNub Dashboard!
-     *************************************************************************/
     const PUBNUB_PUBLISH_KEY = 'pub-c-3c798ac0-70bb-456c-8901-e77aa75de469';
     const PUBNUB_SUBSCRIBE_KEY = 'sub-c-fd1825d6-c035-45fe-a7e4-886b2648bb49';
     const CHAT_CHANNEL = 'private_couple_space_2026';
 
-    // Core Security & Identity
     const CORRECT_PIN = "1702";
     let myUUID = sessionStorage.getItem('chat_uuid');
     if (!myUUID) {
-      // Must supply uuid/userId to prevent fatal PubNub v7+ runtime errors
       myUUID = 'user-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7);
       sessionStorage.setItem('chat_uuid', myUUID);
     }
 
     let pubnub = null;
 
-    /*************************************************************************
-     * 1. SECURITY & ACCESS CONTROL
-     *************************************************************************/
     const pinInput = document.getElementById('pin-input');
     pinInput.addEventListener('keypress', function(e) {
       if (e.key === 'Enter') verifyPIN();
@@ -459,7 +430,6 @@
         setTimeout(() => {
           document.getElementById('lock-screen').style.display = 'none';
         }, 400);
-        // Initialize Real-time PubNub connection after authenticated
         initPubNub();
       } else {
         pinError.textContent = "Incorrect PIN, my love ❤️";
@@ -469,23 +439,19 @@
       }
     }
 
-    /*************************************************************************
-     * 2. PUBNUB REAL-TIME MESSAGING & PRESENCE
-     *************************************************************************/
     function initPubNub() {
       try {
         pubnub = new PubNub({
           publishKey: PUBNUB_PUBLISH_KEY,
           subscribeKey: PUBNUB_SUBSCRIBE_KEY,
           userId: myUUID,
-          uuid: myUUID // Backward/forward compatibility
+          uuid: myUUID
         });
 
-        // Event Listeners for Messages & Presence
         pubnub.addListener({
           message: function(event) {
-            displayMessage(event.message, event.message.senderId === myUUID);
-            if (event.message.senderId !== myUUID) {
+            if (event.message && event.message.senderId !== myUUID) {
+              displayMessage(event.message, false);
               showToast("Partner sent a message 💌");
             }
           },
@@ -500,7 +466,6 @@
           }
         });
 
-        // Subscribe to channel with Presence enabled
         pubnub.subscribe({
           channels: [CHAT_CHANNEL],
           withPresence: true
@@ -511,7 +476,6 @@
       }
     }
 
-    // Check who is in the channel on connect
     function checkCurrentPresence() {
       pubnub.hereNow({
         channels: [CHAT_CHANNEL],
@@ -528,9 +492,8 @@
       });
     }
 
-    // Dynamic presence updates
     function handlePresence(event) {
-      if (event.uuid === myUUID) return; // Ignore self presence
+      if (event.uuid === myUUID) return;
 
       if (event.action === 'join') {
         updatePartnerStatus(true);
@@ -554,7 +517,6 @@
       }
     }
 
-    // Fetch message history (Storage & Playback)
     function fetchChatHistory() {
       pubnub.fetchMessages({
         channels: [CHAT_CHANNEL],
@@ -569,9 +531,6 @@
       });
     }
 
-    /*************************************************************************
-     * 3. MESSAGING & MEDIA SHARING (BASE64)
-     *************************************************************************/
     function sendMessage() {
       const input = document.getElementById('chat-input');
       const text = input.value.trim();
@@ -584,6 +543,7 @@
         timestamp: Date.now()
       };
 
+      displayMessage(payload, true);
       publishPayload(payload);
       input.value = '';
     }
@@ -592,7 +552,6 @@
       if (e.key === 'Enter') sendMessage();
     }
 
-    // Media Upload & Base64 Converter
     function handleMediaUpload(fileInput) {
       const file = fileInput.files[0];
       if (!file) return;
@@ -601,19 +560,18 @@
       const isVideo = file.type.startsWith('video/');
 
       if (!isImage && !isVideo) {
-        alert("Please choose a valid photo or short video clip.");
+        alert("Please choose a valid photo.");
         return;
       }
 
       const reader = new FileReader();
 
       if (isImage) {
-        // Optimize and compress image via canvas to stay safely under PubNub 32KB payload limits
         reader.onload = function(e) {
           const img = new Image();
           img.onload = function() {
             const canvas = document.createElement('canvas');
-            const maxDim = 400; // max width/height
+            const maxDim = 400;
             let width = img.width;
             let height = img.height;
 
@@ -630,36 +588,22 @@
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
 
-            // Compress to JPEG with 0.6 quality for safe transport
             const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
-            publishPayload({
+            const payload = {
               senderId: myUUID,
               type: 'image',
               content: compressedBase64,
               timestamp: Date.now()
-            });
+            };
+
+            displayMessage(payload, true);
+            publishPayload(payload);
           };
           img.src = e.target.result;
         };
         reader.readAsDataURL(file);
-      } else if (isVideo) {
-        // Video check (PubNub message size constraint)
-        if (file.size > 26000) {
-          alert("Video too large! Without a media storage server, direct streaming clips must be under 25KB.");
-          return;
-        }
-        reader.onload = function(e) {
-          publishPayload({
-            senderId: myUUID,
-            type: 'video',
-            content: e.target.result,
-            timestamp: Date.now()
-          });
-        };
-        reader.readAsDataURL(file);
       }
-
-      fileInput.value = ''; // Reset input
+      fileInput.value = '';
     }
 
     function publishPayload(payload) {
@@ -672,9 +616,6 @@
       });
     }
 
-    /*************************************************************************
-     * 4. UI RENDERING & NOTIFICATIONS
-     *************************************************************************/
     function displayMessage(payload, isMe) {
       const messagesArea = document.getElementById('messages-area');
       const bubble = document.createElement('div');
@@ -683,8 +624,6 @@
       let mediaHtml = '';
       if (payload.type === 'image') {
         mediaHtml = `<img src="${payload.content}" class="message-media" alt="Shared moment" />`;
-      } else if (payload.type === 'video') {
-        mediaHtml = `<video src="${payload.content}" class="message-media" controls autoplay muted loop playsinline></video>`;
       }
 
       const textHtml = payload.type === 'text' ? escapeHtml(payload.content) : '';
